@@ -17,23 +17,6 @@ This repository contains all lab tasks, assignments, and semester project for th
 - CSS3
 - JavaScript
 
-## 📋 Labs
 
-| Lab # | Title | Status |
-|-------|-------|--------|
-| Lab 1 | CV using HTML | ✅ Completed |
-
-## 📝 Assignments
-
-| Assignment # | Title | Status |
-|--------------|-------|--------|
-| - | - | - |
-
-## 🚀 Semester Project
-
-*Coming soon...*
-
----
-
-**Student:** Al Aziz Tech  
+**Student:** Fizza Rashid
 **Course:** Web Development
