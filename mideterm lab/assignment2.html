@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M&S | Marks & Spencer | Fashion, Home, Beauty, Food and Gifts</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css">
    </head>    
     <body>
         
@@ -64,9 +66,10 @@
         </div>
         <div class="shop-link">
             <a href="#">Shop Our Top Picks</a>
+            <span id="slide-counter" class="slide-counter">Showing 1 of 5</span>
             <span class="arrows">
-                <button>&lt;</button>
-                <button>&gt;</button>
+                <button type="button" class="carousel-prev" aria-label="Previous">&lt;</button>
+                <button type="button" class="carousel-next" aria-label="Next">&gt;</button>
             </span>
         </div>
     </div>
@@ -77,13 +80,13 @@
             <h4>&pound;70</h4>
             <p>Suedette Collared Bomber Jacket</p>
         </div>
-        
+
         <div class="product-card">
             <img src="img3.avif" alt="Product 2">
             <h4>&pound;48</h4>
             <p>Faux Suede Wide Leg Trousers</p>
         </div>
-       
+
         <div class="product-card">
             <img src="img4.avif" alt="Product 3">
             <h4>&pound;50</h4>
@@ -239,8 +242,10 @@
         <p>Modern Slavery Act</p>
  </div>
 
- <script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
 
+<script>
 const hamburger = document.getElementById('hamburger');
 const closemenu = document.getElementById('close-menu');
 const navMenu = document.getElementById('nav-menu');
@@ -258,11 +263,61 @@ function closeMenu() {
 hamburger.addEventListener('click', openMenu);
 closemenu.addEventListener('click', closeMenu);
 
- document.querySelectorAll('#nav-menu a').forEach(function(link) {
+document.querySelectorAll('#nav-menu a').forEach(function(link) {
     link.addEventListener('click', closeMenu);
 });
 
- </script>
+$(function () {
+    var $slider = $('.top-picks-container');
+    var totalSlides = $slider.children('.product-card').length;
+
+    $slider.on('init reInit afterChange', function (event, slick, currentSlide) {
+        var index = (currentSlide ? currentSlide : 0) + 1;
+        $('#slide-counter').text('Showing ' + index + ' of ' + totalSlides);
+    });
+
+    $slider.slick({
+        infinite: true,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        arrows: false,
+        dots: false,
+        autoplay: true,
+        autoplaySpeed: 5000,
+        pauseOnHover: false,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 2
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 1
+                }
+            }
+        ]
+    });
+
+    $('.carousel-prev').on('click', function () {
+        $slider.slick('slickPrev');
+    });
+
+    $('.carousel-next').on('click', function () {
+        $slider.slick('slickNext');
+    });
+
+    $slider.on('mouseenter', '.product-card', function () {
+        $slider.slick('slickPause');
+    });
+
+    $slider.on('mouseleave', '.product-card', function () {
+        $slider.slick('slickPlay');
+    });
+});
+</script>
     </body>
 
 
