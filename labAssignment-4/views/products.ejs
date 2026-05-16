@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Catalog</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="catalog-page">
+  <header class="catalog-header">
+    <div class="top-header">Explore the full product catalog</div>
+    <div class="catalog-hero">
+      <div>
+        <p class="eyebrow"></p>
+        <h1>Browse, search, filter, and sort products</h1>
+        <p class="catalog-summary">Showing <%= totalProducts %> product<%= totalProducts === 1 ? '' : 's' %> across all categories.</p>
+      </div>
+      <a class="catalog-home-link" href="/">Back to homepage</a>
+    </div>
+  </header>
+
+  <main class="catalog-shell">
+    <form class="catalog-filters" method="GET" action="/products">
+      <div class="filter-field filter-search">
+        <label for="search">Search</label>
+        <input id="search" name="search" type="text" value="<%= filters.search %>" placeholder="Search by product name">
+      </div>
+
+      <div class="filter-field">
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          <option value="" <%= !filters.category ? 'selected' : '' %>>All categories</option>
+          <% categories.forEach((category) => { %>
+            <option value="<%= category %>" <%= filters.category === category ? 'selected' : '' %>><%= category %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="filter-field price-field">
+        <label for="minPrice">Price range</label>
+        <div class="price-inputs">
+          <input id="minPrice" name="minPrice" type="number" min="0" step="0.01" value="<%= filters.minPrice === '' ? '' : filters.minPrice %>" placeholder="Min">
+          <input id="maxPrice" name="maxPrice" type="number" min="0" step="0.01" value="<%= filters.maxPrice === '' ? '' : filters.maxPrice %>" placeholder="Max">
+        </div>
+      </div>
+
+      <div class="filter-field">
+        <label for="sort">Sort by</label>
+        <select id="sort" name="sort">
+          <option value="featured" <%= filters.sort === 'featured' ? 'selected' : '' %>>Featured</option>
+          <option value="ratingDesc" <%= filters.sort === 'ratingDesc' ? 'selected' : '' %>>Top rated</option>
+          <option value="priceAsc" <%= filters.sort === 'priceAsc' ? 'selected' : '' %>>Price: low to high</option>
+          <option value="priceDesc" <%= filters.sort === 'priceDesc' ? 'selected' : '' %>>Price: high to low</option>
+          <option value="nameAsc" <%= filters.sort === 'nameAsc' ? 'selected' : '' %>>Name: A to Z</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="apply-btn">Apply filters</button>
+        <a class="clear-btn" href="/products">Clear</a>
+      </div>
+    </form>
+
+    <section class="catalog-meta">
+      <p>Page <strong><%= currentPage %></strong> of <strong><%= totalPages %></strong></p>
+      <p><%= totalProducts %> matching result<%= totalProducts === 1 ? '' : 's' %></p>
+    </section>
+
+    <section class="catalog-grid">
+      <% if (products.length === 0) { %>
+        <div class="empty-state">
+          <h2>No products matched your filters.</h2>
+          <p>Try removing one filter or clearing the search term.</p>
+        </div>
+      <% } %>
+
+      <% products.forEach((product) => { %>
+        <article class="catalog-card">
+          <div class="catalog-image-wrap">
+            <img src="<%= product.image || '/img6.avif' %>" alt="<%= product.name %>">
+            <span class="stock-badge <%= product.stock > 0 ? 'in-stock' : 'out-stock' %>"><%= product.stock > 0 ? `${product.stock} in stock` : 'Out of stock' %></span>
+          </div>
+          <div class="catalog-card-body">
+            <p class="product-category"><%= product.category %></p>
+            <h2><%= product.name %></h2>
+            <p class="product-description"><%= product.description %></p>
+            <div class="catalog-card-footer">
+              <span class="price">$<%= product.price.toFixed(2) %></span>
+              <span class="rating">★ <%= product.rating.toFixed(1) %></span>
+            </div>
+          </div>
+        </article>
+      <% }) %>
+    </section>
+
+    <nav class="pagination" aria-label="Product pagination">
+      <a class="page-link <%= currentPage === 1 ? 'disabled' : '' %>" href="<%= currentPage === 1 ? '#' : buildProductLink(currentPage - 1) %>">Previous</a>
+
+      <% for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) { %>
+        <a class="page-link <%= pageNumber === currentPage ? 'active' : '' %>" href="<%= buildProductLink(pageNumber) %>"><%= pageNumber %></a>
+      <% } %>
+
+      <a class="page-link <%= currentPage === totalPages ? 'disabled' : '' %>" href="<%= currentPage === totalPages ? '#' : buildProductLink(currentPage + 1) %>">Next</a>
+    </nav>
+  </main>
+</body>
+</html>
