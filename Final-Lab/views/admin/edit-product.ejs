@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Product | Admin Panel</title>
+  <link rel="stylesheet" href="/admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body class="admin-body">
+
+  <!-- ── Sidebar ────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <img src="/logo.png" alt="M&S Logo" class="sidebar-logo">
+      <span class="sidebar-title">Admin Panel</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/admin" class="nav-item" id="nav-dashboard">
+        <span class="nav-icon"></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/add" class="nav-item" id="nav-add-product">
+        <span class="nav-icon"></span>
+        <span>Add Product</span>
+      </a>
+      <a href="/products" class="nav-item" id="nav-storefront">
+        <span class="nav-icon"></span>
+        <span>Storefront</span>
+      </a>
+      <a href="/" class="nav-item" id="nav-homepage">
+        <span class="nav-icon"></span>
+        <span>Homepage</span>
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <p>&copy; 2026 M&S Admin</p>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ───────────────────────────────────── -->
+  <main class="admin-main">
+    <header class="admin-topbar">
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">☰</button>
+      <h1 class="topbar-title">Edit Product</h1>
+      <a href="/admin" class="btn btn-secondary" id="back-to-dashboard">← Back to Dashboard</a>
+    </header>
+
+    <!-- Validation Errors -->
+    <% if (errors && errors.length> 0) { %>
+      <div class="alert alert-error" id="validation-errors">
+        <span class="alert-icon">⚠️</span>
+        <div>
+          <strong>Please fix the following errors:</strong>
+          <ul class="error-list">
+            <% errors.forEach((err)=> { %>
+              <li>
+                <%= err %>
+              </li>
+              <% }) %>
+          </ul>
+        </div>
+      </div>
+      <% } %>
+
+        <section class="form-container">
+          <form method="POST" action="/admin/edit/<%= product._id %>" enctype="multipart/form-data" class="product-form"
+            id="editProductForm" novalidate>
+
+            <div class="form-grid">
+              <!-- Left Column -->
+              <div class="form-column">
+                <div class="form-group">
+                  <label for="name">Product Name <span class="required">*</span></label>
+                  <input type="text" id="name" name="name" value="<%= product.name %>" placeholder="Enter product name"
+                    required>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="price">Price ($) <span class="required">*</span></label>
+                    <input type="number" id="price" name="price" step="0.01" min="0" value="<%= product.price %>"
+                      placeholder="0.00" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="stock">Stock <span class="required">*</span></label>
+                    <input type="number" id="stock" name="stock" min="0" value="<%= product.stock %>" placeholder="0"
+                      required>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="category">Category <span class="required">*</span></label>
+                    <input type="text" id="category" name="category" list="categoryList" value="<%= product.category %>"
+                      placeholder="e.g. Fashion, Home" required>
+                    <datalist id="categoryList">
+                      <% categories.forEach((cat)=> { %>
+                        <option value="<%= cat %>">
+                          <% }) %>
+                    </datalist>
+                  </div>
+                  <div class="form-group">
+                    <label for="rating">Rating (0–5) <span class="required">*</span></label>
+                    <input type="number" id="rating" name="rating" step="0.1" min="0" max="5"
+                      value="<%= product.rating %>" placeholder="4.5" required>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <textarea id="description" name="description" rows="4"
+                    placeholder="Brief product description..."><%= product.description || '' %></textarea>
+                </div>
+              </div>
+
+              <!-- Right Column — Image Upload -->
+              <div class="form-column">
+                <div class="form-group">
+                  <label for="image">Product Image</label>
+                  <div class="upload-area" id="uploadArea">
+                    <% if (product.image) { %>
+                      <div class="upload-placeholder" id="uploadPlaceholder" style="display: none;">
+                        <span class="upload-icon">📷</span>
+                        <p>Drag & drop an image or <strong>click to browse</strong></p>
+                        <p class="upload-hint">Max 5MB — JPG, PNG, WebP, AVIF</p>
+                      </div>
+                      <img class="upload-preview" id="uploadPreview" src="<%= product.image %>" alt="Current image"
+                        style="display: block;">
+                      <% } else { %>
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                          <span class="upload-icon">📷</span>
+                          <p>Drag & drop an image or <strong>click to browse</strong></p>
+                          <p class="upload-hint">Max 5MB — JPG, PNG, WebP, AVIF</p>
+                        </div>
+                        <img class="upload-preview" id="uploadPreview" alt="Preview">
+                        <% } %>
+                          <input type="file" id="image" name="image" accept="image/*" class="upload-input">
+                  </div>
+                  <% if (product.image) { %>
+                    <p class="current-image-note">Current: <code><%= product.image %></code></p>
+                    <% } %>
+                      <p class="upload-hint" style="margin-top: 6px;">Leave empty to keep current image</p>
+                      <button type="button" class="btn btn-sm btn-secondary" id="clearImage"
+                        style="<%= product.image ? '' : 'display:none;' %> margin-top: 8px;">Clear image</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <a href="/admin" class="btn btn-cancel">Cancel</a>
+              <button type="submit" class="btn btn-primary btn-lg" id="submitEditProduct">
+                Save Changes
+              </button>
+            </div>
+          </form>
+        </section>
+  </main>
+
+  <script>
+    // ── Sidebar toggle ────────────────────────────────────
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('collapsed');
+    });
+
+    // ── Image preview ─────────────────────────────────────
+    const fileInput = document.getElementById('image');
+    const uploadArea = document.getElementById('uploadArea');
+    const preview = document.getElementById('uploadPreview');
+    const placeholder = document.getElementById('uploadPlaceholder');
+    const clearBtn = document.getElementById('clearImage');
+
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('drag-over');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('drag-over');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+        showPreview(e.dataTransfer.files[0]);
+      }
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) showPreview(fileInput.files[0]);
+    });
+
+    function showPreview(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.style.display = 'block';
+        placeholder.style.display = 'none';
+        clearBtn.style.display = 'inline-flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.value = '';
+      preview.style.display = 'none';
+      preview.src = '';
+      placeholder.style.display = 'flex';
+      clearBtn.style.display = 'none';
+    });
+
+    // ── Client-side validation ────────────────────────────
+    document.getElementById('editProductForm').addEventListener('submit', function (e) {
+      const name = document.getElementById('name').value.trim();
+      const price = document.getElementById('price').value;
+      const category = document.getElementById('category').value.trim();
+      const rating = document.getElementById('rating').value;
+      const stock = document.getElementById('stock').value;
+
+      const errors = [];
+      if (!name) errors.push('Product name is required.');
+      if (!price) errors.push('Price is required.');
+      if (!category) errors.push('Category is required.');
+      if (!rating) errors.push('Rating is required.');
+      if (!stock && stock !== '0') errors.push('Stock is required.');
+
+      if (errors.length > 0) {
+        e.preventDefault();
+        alert(errors.join('\n'));
+      }
+    });
+  </script>
+</body>
+
+</html>

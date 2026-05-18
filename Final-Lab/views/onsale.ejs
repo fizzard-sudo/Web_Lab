@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>On-Sale Products</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="catalog-page">
+  <header class="catalog-header">
+    <div class="top-header">Limited-time offers and markdowns</div>
+    <div class="catalog-hero">
+      <div>
+        <p class="eyebrow">Promo Selection</p>
+        <h1>Shop all on-sale products</h1>
+        <p class="catalog-summary">Showing <%= products.length %> on-sale product<%= products.length === 1 ? '' : 's' %>.</p>
+      </div>
+      <a class="catalog-home-link" href="/">Back to homepage</a>
+    </div>
+  </header>
+
+  <main class="catalog-shell">
+    <section class="catalog-grid" id="product-list">
+      <% if (products.length === 0) { %>
+        <div class="empty-state">
+          <h2>No on-sale products are available right now.</h2>
+          <p>Check back soon for new promotions.</p>
+        </div>
+      <% } %>
+
+      <% products.forEach((product) => { %>
+        <article class="catalog-card onsale-item">
+          <div class="catalog-image-wrap">
+            <img src="<%= product.image || '/img6.avif' %>" alt="<%= product.name %>">
+            <span class="stock-badge <%= product.stock > 0 ? 'in-stock' : 'out-stock' %>"><%= product.stock > 0 ? `${product.stock} in stock` : 'Out of stock' %></span>
+          </div>
+          <div class="catalog-card-body">
+            <p class="product-category"><%= product.category %></p>
+            <h2><%= product.name %></h2>
+            <p class="product-description"><%= product.description %></p>
+            <div class="catalog-card-footer">
+              <span class="price">$<%= product.price.toFixed(2) %></span>
+              <span class="rating">★ <%= product.rating.toFixed(1) %></span>
+            </div>
+          </div>
+        </article>
+      <% }) %>
+    </section>
+
+    <section class="pagination" id="pagination-controls" aria-label="On-sale products pagination">
+      <button type="button" id="prev-btn" class="page-link">Previous</button>
+      <span id="page-indicator" class="page-link">Page 1 of 1</span>
+      <button type="button" id="next-btn" class="page-link">Next</button>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script>
+    $(function () {
+      var itemsPerPage = 10;
+      var $items = $("#product-list .onsale-item");
+      var totalItems = $items.length;
+      var totalPages = Math.max(Math.ceil(totalItems / itemsPerPage), 1);
+      var currentPage = 1;
+
+      function renderPage(page) {
+        var start = (page - 1) * itemsPerPage;
+        var end = start + itemsPerPage;
+
+        $items.hide();
+        $items.slice(start, end).show();
+
+        $("#page-indicator").text("Page " + currentPage + " of " + totalPages);
+
+        $("#prev-btn")
+          .prop("disabled", currentPage === 1)
+          .toggleClass("disabled", currentPage === 1);
+
+        $("#next-btn")
+          .prop("disabled", currentPage === totalPages)
+          .toggleClass("disabled", currentPage === totalPages);
+      }
+
+      $("#next-btn").on("click", function () {
+        if (currentPage < totalPages) {
+          currentPage += 1;
+          renderPage(currentPage);
+        }
+      });
+
+      $("#prev-btn").on("click", function () {
+        if (currentPage > 1) {
+          currentPage -= 1;
+          renderPage(currentPage);
+        }
+      });
+
+      renderPage(currentPage);
+
+      if (totalItems === 0) {
+        $("#pagination-controls").hide();
+      }
+    });
+  </script>
+</body>
+</html>
