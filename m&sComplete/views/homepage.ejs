@@ -7,7 +7,16 @@
    <link rel="stylesheet" href="/style.css">
    </head>    
     <body>
-        
+        <% if (successMsg && successMsg.length > 0) { %>
+            <div style="background-color: #dcfce3; color: #166534; padding: 15px; text-align: center; font-weight: 500; font-family: Arial, sans-serif; border-bottom: 1px solid #86efac;">
+                <%= successMsg %>
+            </div>
+        <% } %>
+        <% if (errorMsg && errorMsg.length > 0) { %>
+            <div style="background-color: #fee2e2; color: #b91c1c; padding: 15px; text-align: center; font-weight: 500; font-family: Arial, sans-serif; border-bottom: 1px solid #fca5a5;">
+                <%= errorMsg %>
+            </div>
+        <% } %>
          <header>
             <div class="top-header"> Shop our just-arrived women's collections</div>
             <nav class="category-nav"></nav>
@@ -28,8 +37,15 @@
          </button>
      </div>
   <div class="right">
-   <a href="/signin">sign in</a>
-
+   <% if (user) { %>
+     <a href="/logout">Logout</a>
+     <a href="/profile">My Profile</a>
+     <% if (user.role === 'admin') { %>
+       <a href="/admin/products">Admin</a>
+     <% } %>
+   <% } else { %>
+     <a href="/signin">Login / Register</a>
+   <% } %>
     <img class="save"src="/saveitem.svg">
     <img class="emptybag" src="/bagempty.svg">
 </div>
@@ -41,7 +57,8 @@
                 <li><a href="/kids">Kids</a></li>
                  <li><a href="/gift">Gift</a></li>
                  <li><a href="/beauty">Beauty</a></li>
-                <li><a href="/sale">Sale</a></li>
+                 <li><a href="/sale">Sale</a></li>
+                 <li><a href="/products">Products</a></li>
              </ul>
         </nav>
     </div>
